@@ -13,21 +13,23 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.localization@1.0.6/dist/leaflet.localization.min.js"></script>
 </head>
 <body>
     <div id="map"></div>
 
     <script>
-        // For The Map Display
+        // Initialize map
         var map = L.map('map').setView([51.505, -0.09], 13);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-        // For The Map Display
 
-        // Locate The Current Location
-        map.locate({setView: true, maxZoom: 16});
+        // Add tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Locate the current location and continuously track
+        map.locate({setView: true, maxZoom: 16, watch: true}); // Set the watch option to true
+
         function onLocationFound(e) {
             var radius = e.accuracy;
 
@@ -36,15 +38,13 @@
 
             L.circle(e.latlng, radius).addTo(map);
         }
-        map.on('locationfound', onLocationFound);
+
         function onLocationError(e) {
             alert(e.message);
         }
 
+        map.on('locationfound', onLocationFound);
         map.on('locationerror', onLocationError);
-        // Locate The Current Location
-
-        
     </script>
 </body>
 </html>
