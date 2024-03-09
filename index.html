@@ -46,8 +46,10 @@
             currentMarker = L.marker(e.latlng).addTo(map)
                 .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
+            // Set default radius for the accuracy circle
+            var defaultRadius = 10; // in meters
             currentCircle = L.circle(e.latlng, {
-                radius: radius,
+                radius: defaultRadius,
                 fillColor: '#007BFF',
                 fillOpacity: 0.3,
                 weight: 2,
