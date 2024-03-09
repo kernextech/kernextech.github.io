@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Test Map</title>
     <link rel="stylesheet" href="map_style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""/>
@@ -26,19 +25,9 @@
         var currentCircle;
 
         // Add tile layer from OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © OpenStreetMap contributors'
         }).addTo(map);
-
-        // Function to calculate bearing between two points
-        function getBearing(lat1, lon1, lat2, lon2) {
-            var dLon = lon2 - lon1;
-            var y = Math.sin(dLon) * Math.cos(lat2);
-            var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-            var brng = Math.atan2(y, x) * (180 / Math.PI);
-            brng = (brng + 360) % 360;
-            return brng;
-        }
 
         // Locate the current location and continuously track
         map.locate({setView: true, maxZoom: 16, watch: true}); // Set the watch option to true
@@ -54,7 +43,14 @@
                 map.removeLayer(currentCircle);
             }
 
-            currentMarker = L.marker(e.latlng).addTo(map)
+            // Create a custom marker icon
+            var customIcon = L.divIcon({
+                className: 'custom-marker-icon',
+                html: '<div class="inner-circle"></div>'
+            });
+
+            // Add the custom marker to the map
+            currentMarker = L.marker(e.latlng, { icon: customIcon }).addTo(map)
                 .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
             // Set default radius for the accuracy circle
@@ -66,26 +62,47 @@
                 weight: 2,
                 color: '#007BFF'
             }).addTo(map);
-
-            // Example: Show direction from current location to a fixed point (51.51, -0.09)
-            var destinationLatLng = L.latLng(51.51, -0.09); // Example destination point
-            var bearing = getBearing(e.latlng.lat, e.latlng.lng, destinationLatLng.lat, destinationLatLng.lng);
-
-            // Add an arrow marker to indicate direction
-            var arrowMarker = L.marker(e.latlng, {
-                icon: L.divIcon({
-                    html: '<i class="fa fa-arrow-up" style="color: #124a78; transform: rotate(' + bearing + 'deg); font-size:20px;"></i>',
-                    iconSize: [20, 20]
-                })
-            }).addTo(map);
         }
 
         function onLocationError(e) {
-            alert(e.message);
+            var errorMessage;
+            switch(e.code) {
+                case e.PERMISSION_DENIED:
+                    errorMessage = "Geolocation permission denied. Please enable location access.";
+                    break;
+                case e.POSITION_UNAVAILABLE:
+                    errorMessage = "Geolocation information is unavailable at the moment.";
+                    break;
+                case e.TIMEOUT:
+                    errorMessage = "Geolocation request timed out. Please try again later.";
+                    break;
+                default:
+                    errorMessage = "An unknown error occurred while retrieving your location.";
+            }
+            alert(errorMessage);
         }
 
         map.on('locationfound', onLocationFound);
         map.on('locationerror', onLocationError);
+
+        
+        // Function to add a marker at a specific location
+        function addMarker(lat, lng) {
+            // Create a custom icon for the shop marker
+            var shopIcon = L.icon({
+                iconUrl: 'shop_icon.png', // Path to the shop icon image
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Anchor point of the icon
+                popupAnchor: [0, -32] // Popup anchor offset
+            });
+
+            // Add the shop marker to the map
+            var marker = L.marker([lat, lng], { icon: shopIcon }).addTo(map)
+            .bindPopup("Test Shop").openPopup();
+        }
+
+        // Example: Add a marker at a specific location (e.g., a shop)
+        addMarker(13.651693927154072, 100.59798299464336); // Example coordinates (latitude, longitude)
     </script>
 </body>
 </html>
