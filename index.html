@@ -14,9 +14,12 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet.localization@1.0.6/dist/leaflet.localization.min.js"></script>
+    <!-- Include Leaflet Routing Machine script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 </head>
 <body>
-    <div id="map"></div>
+    <div id="map" style="height: 400px;"></div>
 
     <script>
         // Initialize map
@@ -85,7 +88,6 @@
         map.on('locationfound', onLocationFound);
         map.on('locationerror', onLocationError);
 
-        
         // Function to add a marker at a specific location
         function addMarker(lat, lng) {
             // Create a custom icon for the shop marker
@@ -98,11 +100,36 @@
 
             // Add the shop marker to the map
             var marker = L.marker([lat, lng], { icon: shopIcon }).addTo(map)
-            .bindPopup("Test Shop").openPopup();
+                .bindPopup("Test Shop").openPopup();
         }
 
         // Example: Add a marker at a specific location (e.g., a shop)
         addMarker(13.651693927154072, 100.59798299464336); // Example coordinates (latitude, longitude)
+
+        // Create a custom control for the route direction button
+        var routeControl = L.control({position: 'topright'});
+        routeControl.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'custom-control');
+            div.innerHTML = '<button onclick="calculateRoute()">Get Directions to Shop</button>';
+            return div;
+        };
+        routeControl.addTo(map);
+
+        // Function to calculate and display route direction from current location to the shop
+        function calculateRoute() {
+            if (currentMarker) {
+                var currentLocation = currentMarker.getLatLng();
+                var shopLocation = L.latLng(13.651693927154072, 100.59798299464336); // Example shop location
+                L.Routing.control({
+                    waypoints: [
+                        currentLocation,
+                        shopLocation
+                    ]
+                }).addTo(map);
+            } else {
+                alert('Current location not found. Please wait or enable geolocation.');
+            }
+        }
     </script>
 </body>
 </html>
