@@ -28,12 +28,12 @@
         var currentCircle;
 
         // Add tile layer from OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data © OpenStreetMap contributors'
+        L.tileLayer('https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Locate the current location and continuously track
-        map.locate({setView: true, maxZoom: 16, watch: true}); // Set the watch option to true
+        // // Locate the current location and continuously track
+        // map.locate({setView: true, maxZoom: 16, watch: true}); // Set the watch option to true
 
         function onLocationFound(e) {
             var radius = e.accuracy;
@@ -54,7 +54,8 @@
 
             // Add the custom marker to the map
             currentMarker = L.marker(e.latlng, { icon: customIcon }).addTo(map)
-                .bindPopup("You are within " + radius + " meters from this point").openPopup();
+            // currentMarker = L.marker(e.latlng, { icon: customIcon }).addTo(map)
+            //     .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
             // Set default radius for the accuracy circle
             var defaultRadius = 10; // in meters
@@ -84,6 +85,9 @@
             }
             alert(errorMessage);
         }
+
+        // Locate the current location and continuously track
+        map.locate({setView: true, maxZoom: 16, watch: true}); // Set the watch option to true
 
         map.on('locationfound', onLocationFound);
         map.on('locationerror', onLocationError);
